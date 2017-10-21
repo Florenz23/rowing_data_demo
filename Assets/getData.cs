@@ -14,20 +14,20 @@ public class getData : MonoBehaviour {
 	 // Get the root reference location of the database.
 	 FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://rowing2323.firebaseio.com/");
 	 DatabaseReference reference = FirebaseDatabase.DefaultInstance.RootReference;
-	 FirebaseDatabase.DefaultInstance
-		 .GetReference("message/check/moin")
-		 .GetValueAsync().ContinueWith(task => {
-			 if (task.IsFaulted) {
-				 // Handle the error...
-			 }
-			 else if (task.IsCompleted) {
-				 DataSnapshot snapshot = task.Result;
-				 string value = "" + snapshot.GetValue(true);
-				 displayText(value);
-				 // Do something with snapshot...
-			 }
-		 });
-
+		 FirebaseDatabase.DefaultInstance
+			 .GetReference("message/check/moin")
+			 .ValueChanged += HandleValueChanged;
+	}
+	void HandleValueChanged(object sender, ValueChangedEventArgs args) {
+		if (args.DatabaseError != null) {
+			Debug.LogError(args.DatabaseError.Message);
+			return;
+		}
+		// Do something with the data in args.Snapshot
+		print(args.Snapshot.GetValue(true));
+		string data = "" + args.Snapshot.GetValue(true);
+		displayText(data);
+	 //  string data = args.Snapshot
 	}
 	void displayText(string data){
 		txt = gameObject.GetComponent<TextMesh>();
